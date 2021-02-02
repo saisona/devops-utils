@@ -1,6 +1,21 @@
+" File              : .vimrc
+" Author            : Alexandre Saison <alexandre.saison@inarix.com>
+" Date              : 28.12.2020
+" Last Modified Date: 29.12.2020
+" Last Modified By  : Alexandre Saison <alexandre.saison@inarix.com>
 " Minimal Configuration
 set nocompatible
 set redrawtime=10000000
+
+" save undo trees in files
+set undofile
+set undodir=~/.vim/undo
+
+set number relativenumber
+
+
+" number of undo saved
+set undolevels=10000
 
 syntax on
 filetype plugin indent on
@@ -44,8 +59,8 @@ Plug 'juliosueiras/vim-terraform-completion' "Terraform Completion
 
 " Other
 Plug 'habamax/vim-godot'
-Plug 'alpertuna/vim-header'
-
+Plug 'alpertuna/vim-header' 
+Plug 'sinetoami/vim-winresize'
 " Icons
 Plug 'ryanoasis/vim-devicons'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
@@ -72,7 +87,6 @@ let g:go_def_mode='gopls'
 let g:go_info_mode='gopls'
 let g:go_fmt_command = "goimports"
 
-
 " auto header
 let g:header_field_author = 'Alexandre Saison'
 let g:header_field_author_email = 'alexandre.saison@inarix.com'
@@ -82,8 +96,8 @@ map > :AddHeader<CR>
 map <silent> < :noh<CR>
 
 inoremap <silent><expr> <c-space> coc#refresh()
-map <silent> + :res +1<CR>
-map <silent> _ :res -1<CR>
+nmap <silent> + :res +1<CR>
+nmap <silent> _ :res -1<CR>
 
 set shiftwidth=2
 set autoindent
@@ -91,6 +105,7 @@ set smartindent
 
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+autocmd BufWritePre *.go :call CocAction('runCommand', 'editor.action.organizeImport')
 autocmd FileType html syn sync match htmlHighlight groupthere javaScript "<script"
 autocmd FileType html syn region javaScript start=+<script\_[^>]*>+ keepend end=+</script\_[^>]*>+me=s-1 contains=@htmlJavaScript,htmlCssStyleComment,htmlScriptTag,@htmlPreproc
 autocmd FileType javascript syn sync ccomment javaScriptComment
