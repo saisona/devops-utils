@@ -1,0 +1,19 @@
+#!/bin/bash
+# File              : filestore-backup
+# Author            : Alexandre Saison <alexandre.saison@inarix.com>
+# Date              : 10.02.2021
+# Last Modified Date: 10.02.2021
+# Last Modified By  : Alexandre Saison <alexandre.saison@inarix.com>
+
+BACKUP_ID=`date +"%s"`
+BACKUP_NAME="filestore-${BACKUP_ID}"
+THREAD_TS=`./.sendSlackMessage.sh "DAILY BACKUP" "Generate daily filestore backup $BACKUP_NAME"`
+
+gcloud beta filestore backups create ${BACKUP_NAME} --file-share=file_manager --instance=file-manager-cache --region=europe-west4 --instance-zone=europe-west4-a
+
+if [[ $? == 0 ]]
+then
+./.sendSlackMessage.sh "DAILY BACKUP" "$BACKUP_NAME backup finished with success" $THREAD_TS
+else
+./.sendSlackMessage.sh "DAILY BACKUP" "An error occured during backup creation of $BACKUP_NAME" $THREAD_TS
+fi
