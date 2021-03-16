@@ -12,5 +12,6 @@ RUN gcloud components update &&\
 
 COPY .sendSlackMessage.sh .
 COPY filestore-backup .
+COPY filestore-gc .
 
 CMD ["/app/filestore-backup"]
