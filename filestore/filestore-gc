@@ -1,0 +1,31 @@
+#!/bin/bash
+# File              : filestore-gc
+# Author            : Alexandre Saison <alexandre.saison@inarix.com>
+# Date              : 10.02.2021
+# Last Modified Date: 16.03.2021
+# Last Modified By  : Alexandre Saison <alexandre.saison@inarix.com>
+THREAD_TS=$1
+NB_BACKUPS=`gcloud beta filestore backups list | wc -l`
+NB_BACKUPS=`echo "$NB_BACKUPS"| sed -e 's/^[[:space:]]*//'`
+
+echo "NB_BACKUPS=$NB_BACKUPS"
+
+# If greater than 7 since
+if [[  "$NB_BACKUPS" -gt 7 ]]
+then
+
+  # Write exact number of filestore backups to delete inside a file.
+  gcloud beta filestore backups list | tail -n +2 | cut -d " " -f1 > backupsList.txt
+
+  # Remove old filestore backups.
+  cat backupsList.txt | while read line
+  do
+    gcloud beta filestore backups delete $line --region europe-west4 --quiet
+  done
+
+  ./.sendSlackMessage.sh "DAILY BACKUP" "Removed $(cat backupsList.txt | wc -l) backups." $THREAD_TS
+
+  # Remove the file to be sure to not over populate the workstation.
+  rm backupsList.txt
+fi
+
